@@ -1,0 +1,77 @@
+<html>
+  <head>
+    <style>
+      #bottom{
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+      }
+      #list{
+        overflow: auto;
+        bottom: 64px;
+        position: absolute;
+        right: 0;
+        left: 0;
+        top: 0;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body id="app">
+    <script src="jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="dist/semantic.min.css">
+    <script src="dist/semantic.min.js"></script>
+    <script src="vue.js"></script>
+
+    <div class="ui list divided massive" id="list">
+      <div class="item" v-for="message in messages">
+        <img v-bind:src="message.avatar" class="ui avatar image" />
+        <div class="content">
+          <div class="header">
+            {{message.author}}
+          </div>
+          <div class="description">
+            {{message.content}}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ui action fluid massive input" id="bottom">
+      <input placeholder="input..." v-model="input" v-on:keyup.enter="send" id="input" autofocus="autofocus">
+      <button class="ui icon button massive" v-bind:class="{'primary':input}" v-on:click="send">
+        <i class="send icon"></i>
+      </button>
+    </div>
+    <script>
+      new Vue({
+        el: '#app',
+        data: {
+          messages: [
+            { author: 'robot', content: '你好！' , avatar: 'robot.jpg' }
+          ],
+          input: ''
+        },
+        methods: {
+          send: function(){
+            var messages = this.messages;
+            messages.push({
+              author: 'you',
+              content: this.input,
+              avatar: 'you.jpg'
+            });
+            $.get('/api', {info:this.input}, function (data) {
+              messages.push({
+                author: 'robot',
+                content: data,
+                avatar: 'robot.jpg'
+              });
+            });
+            this.input = '';
+            $('#input').focus();
+          }
+        }
+      })
+    </script>
+  </body>
+</html>
